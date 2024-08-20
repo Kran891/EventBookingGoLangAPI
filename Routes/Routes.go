@@ -9,4 +9,6 @@ func Routes(server *gin.Engine) {
 	server.GET("/events/:id", getEvent)
 	server.DELETE("events/:id", deleteEvent)
 	server.POST("/users", createUser)
+	server.PUT("/users", updateUser)
+	server.GET("/users/:id", getUser)
 }

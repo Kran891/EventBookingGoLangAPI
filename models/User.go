@@ -30,3 +30,9 @@ func (u *User) Update() {
 	}
 	u.Id, _ = res.LastInsertId()
 }
+func GetUserById(id int64) (user User) {
+	Query := `SELECT * FROM USERS WHERE ID=?`
+	res := db.SelectRow(Query, id)
+	res.Scan(&user.Id, &user.Email, &user.Password, &user.Name)
+	return
+}
