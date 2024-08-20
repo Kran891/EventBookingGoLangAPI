@@ -22,3 +22,11 @@ func (u *User) Save() {
 	}
 	u.Id, _ = res.LastInsertId()
 }
+func (u *User) Update() {
+	Query := `UPDATE USERS SET NAME=?,EMAIL=? WHERE ID=?`
+	res, err := db.DMLCommand(Query, u.Name, u.Email, u.Id)
+	if err != nil {
+		fmt.Println("An Error Occured while UPdating User...")
+	}
+	u.Id, _ = res.LastInsertId()
+}
