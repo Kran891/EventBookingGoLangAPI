@@ -32,3 +32,18 @@ func updateUser(context *gin.Context) {
 	user.Update()
 	context.JSON(http.StatusAccepted, user)
 }
+func deleteUser(context *gin.Context) {
+	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"msg": "Please Only Nuber is accepted as Id"})
+		return
+	}
+	res, _ := models.DeleteUser(id)
+	if res != 1 {
+		context.JSON(http.StatusInternalServerError, gin.H{"msg": "Invalid UserId"})
+		return
+	}
+	context.JSON(http.StatusAccepted, map[string]any{
+		"msg": "Deleted Successfully",
+	})
+}

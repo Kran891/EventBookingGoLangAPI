@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"event-booking/db"
 	"fmt"
 )
@@ -35,4 +36,13 @@ func GetUserById(id int64) (user User) {
 	res := db.SelectRow(Query, id)
 	res.Scan(&user.Id, &user.Email, &user.Password, &user.Name)
 	return
+}
+func DeleteUser(id int64) (int64, error) {
+	Query := `DELETE FROM USER WHERE ID=?`
+	res, err := db.DMLCommand(Query, id)
+	if err != nil {
+		fmt.Println("An Error Occured ")
+		return 0, errors.New("an error occured")
+	}
+	return res.RowsAffected()
 }
