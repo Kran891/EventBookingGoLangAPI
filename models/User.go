@@ -3,6 +3,8 @@ package models
 import (
 	"errors"
 	"event-booking/db"
+	"event-booking/utils"
+
 	"fmt"
 )
 
@@ -17,7 +19,11 @@ func (u *User) Save() {
 	Query := `
 	INSERT INTO USERS (EMAIL,PASSWORD,NAME) VALUES (?,?,?)
 	`
-	res, err := db.DMLCommand(Query, u.Email, u.Password, u.Name)
+	hash, err := utils.HashPassword(u.Password)
+	if err != nil {
+		fmt.Print("An Error Occured")
+	}
+	res, err := db.DMLCommand(Query, u.Email, hash, u.Name)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -37,8 +43,21 @@ func GetUserById(id int64) (user User) {
 	res.Scan(&user.Id, &user.Email, &user.Password, &user.Name)
 	return
 }
+func (u *User) Login() {
+	Query := `SELECT ID,PASSWORD FROM USERS WHERE EMAIL=?`
+	res := db.SelectRow(Query, u.Email)
+	var password string
+	err := res.Scan(&u.Id, &password)
+	if err != nil {
+		fmt.Println(err)
+	}
+	val := utils.CompareHash(password, u.Password)
+	if !val {
+		fmt.Println(err)
+	}
+}
 func DeleteUser(id int64) (int64, error) {
-	Query := `DELETE FROM USER WHERE ID=?`
+	Query := `DELETE FROM USERS WHERE ID=?`
 	res, err := db.DMLCommand(Query, id)
 	if err != nil {
 		fmt.Println("An Error Occured ")

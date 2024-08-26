@@ -2,6 +2,8 @@ package routes
 
 import (
 	"event-booking/models"
+	"event-booking/utils"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -45,5 +47,26 @@ func deleteUser(context *gin.Context) {
 	}
 	context.JSON(http.StatusAccepted, map[string]any{
 		"msg": "Deleted Successfully",
+	})
+}
+func loginUser(context *gin.Context) {
+	var user models.User
+	context.ShouldBindJSON(&user)
+	user.Login()
+	token, err := utils.GenerateToken(user.Email, user.Id)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{
+			"msg": "An error Occured",
+		})
+	}
+	id, err := utils.VerifyToken(token)
+	if err != nil {
+		fmt.Println("An Error Occured")
+	}
+	fmt.Println(id)
+	context.SetCookie("token", token, 3600, "/", "/", true, true)
+
+	context.JSON(http.StatusOK, gin.H{
+		"token": token,
 	})
 }
